@@ -1,0 +1,6 @@
+
+blankCmd.txt
+config.json
+/node_modules
+src/commands/test.js
+PoopSocietyDatabase.sqlite
