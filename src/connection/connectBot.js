@@ -6,8 +6,6 @@ const { readdirSync } = require("fs");
 const { Routes } = require('discord-api-types/v10');
 const { List } = require('../database/Database');
 const { displayLeaderboard, editMessage } = require('../utility/leaderboardUtility');
-const { setInterval } = require('timers/promises');
-
 
 //#region Initialize Bot
 const client = new discord.Client({ intents: [discord.GatewayIntentBits.Guilds, discord.GatewayIntentBits.MessageContent, discord.GatewayIntentBits.GuildMembers, discord.GatewayIntentBits.GuildMessages ] });
@@ -127,7 +125,7 @@ client.on('ready', async () => {
                 console.error('Error updating message:', error);
             } finally {
                 // Schedule the next update after 5 seconds
-                setTimeout(updateMessage, 5000);
+                setTimeout(updateMessage, 1000 * 60 * 30);
             }
         };
 
