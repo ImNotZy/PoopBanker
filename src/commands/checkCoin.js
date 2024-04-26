@@ -14,19 +14,22 @@ module.exports = {
     const receiver = interaction.options.getUser('user');
     const member = interaction.guild.members.cache.get(receiver.id);
 
+    //defer reply to buy time for code to run
+    await interaction.deferReply();
+
     try {
       //get user
       const user = await List.findOne({ where: { user: receiver.id }});
 
       //check to see if user is in database
       if (!user) {
-        return interaction.reply({ content: 'This user is not on the list.', ephemeral: true });
+        return interaction.editReply({ content: 'This user is not on the list.', ephemeral: true });
       }
 
       //reply
-      return interaction.reply({ content: `User <@!${receiver.id}> has **${user.coin}** Poopcoins!` });
+      return interaction.editReply({ content: `User <@!${receiver.id}> has **${user.coin}** Poopcoins!` });
     } catch (error) {
-      await interaction.reply({ content: 'Something went wrong with adding a user.', ephemeral: true });
+      await interaction.editReply({ content: 'Something went wrong with adding a user.', ephemeral: true });
       return console.log(error);
     }
   }

@@ -19,13 +19,16 @@ module.exports = {
     const coinsToAdd = interaction.options.getInteger('amount');
     const roleMember = interaction.guild.members.cache.get(receiver.id);
 
+    //defer reply to buy time for code to run
+    await interaction.deferReply({ ephemeral: true });
+
     try {
       //check for user
       const user = await List.findOne({ where: { user: receiver.id } });
 
       //make sure user is in the database
       if (!user) {
-        return interaction.reply({ content: `<@!${receiver.id}> is not a part of the poopbank.`, ephemeral: true });
+        return interaction.editReply({ content: `<@!${receiver.id}> is not a part of the poopbank.`, ephemeral: true });
       }
 
       //define all roles
@@ -75,10 +78,10 @@ module.exports = {
 
       //send message and reply to command
       await channel.send(`<@!${receiver.id}> has recieved poopcoin! They now have **${updatedCoinCount}** coins! This makes them: ` + '`' + role.name  + '`!' );
-      await interaction.reply({ content: `<@!${receiver.id}> has gained **${coinsToAdd}** poopcoin.`, ephemeral: true });
+      await interaction.editReply({ content: `<@!${receiver.id}> has gained **${coinsToAdd}** poopcoin.`, ephemeral: true });
     } catch (error) {
       console.error('Error adding coin:', error);
-      return interaction.reply({ content: 'Something went wrong with adding a coin.', ephemeral: true });
+      return interaction.editReply({ content: 'Something went wrong with adding a coin.', ephemeral: true });
     }
   }
 };

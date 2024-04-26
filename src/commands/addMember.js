@@ -16,9 +16,12 @@ module.exports = {
     const receiver = interaction.options.getUser('user');
     const roleMember = interaction.guild.members.cache.get(receiver.id);
 
+    //defer reply to buy time for code to run
+    await interaction.deferReply({ ephemeral: true });
+
     //check if in guild
     if(!roleMember) {
-      return await interaction.reply({ content: 'This user was not found in the guild.', ephemeral: true });
+      return await interaction.editReply({ content: 'This user was not found in the guild.', ephemeral: true });
     }
 
     try {
@@ -27,7 +30,7 @@ module.exports = {
       
       //check to see if user exists in database
       if (existingUser) {
-        return await interaction.reply({ content: 'This user is already in the database.', ephemeral: true });
+        return await interaction.editReply({ content: 'This user is already in the database.', ephemeral: true });
       }
 
       //define roles, take away any roles, add defualt role
@@ -38,7 +41,7 @@ module.exports = {
 
       //check if role is valid
       if(!poorRole) {
-        return await interaction.reply({ content: 'Role invalid! Check config!', ephemeral: true });
+        return await interaction.editReply({ content: 'Role invalid! Check config!', ephemeral: true });
       }
        
       //remove role
@@ -60,10 +63,10 @@ module.exports = {
       await channel.send(`<@!${receiver.id}> has been added to the poopcoin bank! They have a balance of **${newUser.coin}** poopcoin.`);
     
       //reply to the command
-      return await interaction.reply({ content: `User <@!${receiver.id}> has been added to the Poopcoin bank!`, ephemeral: true });
+      return await interaction.editReply({ content: `User <@!${receiver.id}> has been added to the Poopcoin bank!`, ephemeral: true });
       
     } catch (error) {
-      await interaction.reply({ content: 'Something went wrong with adding a user.', ephemeral: true });
+      await interaction.editReply({ content: 'Something went wrong with adding a user.', ephemeral: true });
       return console.log(error);
     }
   }

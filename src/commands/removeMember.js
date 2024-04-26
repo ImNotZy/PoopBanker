@@ -1,7 +1,7 @@
 const  discord = require('discord.js');
 const { SlashCommandBuilder, EmbedBuilder, ModalBuilder, TextInputBuilder } = require("@discordjs/builders");
 const config = require('../../config.json');
-const { List } = require('../database/Database');
+const { List, Player, LastPlay } = require('../database/Database');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,7 +15,10 @@ module.exports = {
 
     //get data
     const target = interaction.options.getUser('user');
-    const receiver = interaction.guild.members.cache.get(target.id)
+    const receiver = interaction.guild.members.cache.get(target.id);
+
+    //defer reply to buy time for code to run
+    await interaction.deferReply({ ephemeral: true });
 
     try {
       //attempt to get user
@@ -23,7 +26,7 @@ module.exports = {
 
       //check if user is not in the list
       if (!existingUser) {
-        return interaction.reply({ content: 'This user is not on the list.', ephemeral: true });
+        return interaction.ediReply({ content: 'This user is not on the list.', ephemeral: true });
       }
 
       //get roles
@@ -39,7 +42,7 @@ module.exports = {
 
       //check for default role
       if(!roleToAdd) {
-        return await interaction.reply({ content: 'Role invalid! Check config!', ephemeral: true });
+        return await interaction.editReply({ content: 'Role invalid! Check config!', ephemeral: true });
       }
       
       //remove all roles
@@ -48,8 +51,10 @@ module.exports = {
       //add default role
       await receiver.roles.add(roleToAdd);
       
-      //remove user from list
+      //remove user from all databases
       await List.destroy({ where: { user: receiver.id }});
+      await Player.destroy({ where: { user: receiver.id }});
+      await LastPlay.destroy({ where: {user: receiver.id }});
 
       const channel = interaction.guild.channels.cache.get(config.POOPCOIN_SETTINGS.POOP_ANNOUNCEMENTS_CHANNEL_ID);
       
@@ -57,10 +62,10 @@ module.exports = {
       await channel.send(`<@!${receiver.id}> has been removed remove the poopcoin bank!`);
       
       //reply
-      return interaction.reply({ content: `User <@!${receiver.id}> has been removed from the Poopcoin bank!`, ephemeral: true });
+      return interaction.editReply({ content: `User <@!${receiver.id}> has been removed from the Poopcoin bank!`, ephemeral: true });
 
     } catch (error) {
-      await interaction.reply({ content: 'Something went wrong with removing a user.', ephemeral: true });
+      await interaction.editReply({ content: 'Something went wrong with removing a user.', ephemeral: true });
       return console.log(error);
     }
   }

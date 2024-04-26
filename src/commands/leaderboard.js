@@ -6,6 +6,10 @@ module.exports = {
     .setName('coin-leaderboard')
     .setDescription('View who is on top of the coin leaderboard!'),
   async execute(interaction) {
+    
+    //defer reply to buy time for code to run
+    await interaction.deferReply({ ephemeral: true });
+    
     try {
       //get all users coins and order them in decending order
       const topCoins = await List.findAll({ 
@@ -28,11 +32,11 @@ module.exports = {
       });
 
       //reply with the embed
-      await interaction.reply({ embeds: [embed], ephemeral: true }); 
+      await interaction.editReply({ embeds: [embed], ephemeral: true }); 
 
     } catch (error) {
       console.error('Error fetching leaderboard:', error);
-      await interaction.reply({ content: 'Error fetching leaderboard.', ephemeral: true });
+      await interaction.editReply({ content: 'Error fetching leaderboard.', ephemeral: true });
     }
   }
 };
