@@ -30,10 +30,11 @@ module.exports = {
       if (dealerScore == playerScore) {
         await player.destroy();
         changeRole(interaction, user);
+        await user.update({ coin: user.coin + player.bet });
         return await interaction.editReply({ content: `Dealers Hand: ${handToString([...player.dealerHand])} | Thats: **${dealerScore}!**\nStandoff! You get your bet back!` });
         //if the dealerscore is greater than 21, update coins, destroy the player, run changeRole, add doubled bet amount to user.coins
       } else if (dealerScore > 21) {
-        user.update({ coin: user.coin + (player.bet * 2)});
+        await user.update({ coin: user.coin + (player.bet * 2)});
         await player.destroy();
         changeRole(interaction, user);
         return await interaction.editReply({ content: `Dealers Hand: ${handToString([...player.dealerHand])} | Thats: **${dealerScore}!**\nDealer busts! You win: **${player.bet * 2}** Poopcoin!`});
@@ -54,11 +55,12 @@ module.exports = {
           if (dealerScore == playerScore) {
             await player.destroy();
             changeRole(interaction, user);
+            await user.update({ coin: user.coin + player.bet });
             await interaction.editReply({ content: `Dealers Hand: ${handToString([...player.dealerHand])} | Thats: **${dealerScore}!**\nStandoff! You get your bet back!` });
             break;
             //if the dealerscore is greater than 21, update coins, destroy the player, run changeRole, add doubled bet amount to user.coins
           } else if (dealerScore > 21) {
-            user.update({ coin: user.coin + (player.bet * 2)});
+            await user.update({ coin: user.coin + (player.bet * 2)});
             await player.destroy();
             changeRole(interaction, user);
             await interaction.editReply({ content: `Dealers Hand: ${handToString([...player.dealerHand])} | Thats: **${dealerScore}!**\nDealer busts! You win: **${player.bet * 2}** Poopcoin!`});
