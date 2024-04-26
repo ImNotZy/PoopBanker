@@ -5,6 +5,8 @@ const { REST } = require('@discordjs/rest');
 const { readdirSync } = require("fs");
 const { Routes } = require('discord-api-types/v10');
 const { List } = require('../database/Database');
+const { displayLeaderboard, editMessage } = require('../utility/leaderboardUtility');
+const { setInterval } = require('timers/promises');
 
 
 //#region Initialize Bot
@@ -71,6 +73,70 @@ client.on('guildMemberAdd', async (member) => {
 
         await member.roles.add(role);
     } catch(err) {
-        return console.log('There was an error adding a role to a new member: ' + err);
+        console.log('There was an error adding a role to a new member: ' + err);
+    }
+});
+
+client.on('ready', async () => {
+    try {
+        // Get channel
+        const channel = client.channels.cache.get(config.POOPCOIN_SETTINGS.POOP_LEADERBOARD_CHANNEL_ID);
+
+        // Function to send the leaderboard message
+        const sendMessage = async () => {
+            // Get embed
+            const embed = await displayLeaderboard();
+
+            // Check if embed is null (no data to display)
+            if (!embed) {
+                console.log("No data to display.");
+                return;
+            }
+
+            // Send message and store it
+            let message = await channel.send({ embeds: [embed] });
+
+            // Return the message
+            return message;
+        };
+
+        // Function to recursively update message
+        const updateMessage = async () => {
+            // Get updated embed
+            const updatedEmbed = await displayLeaderboard();
+
+            // Check if updated embed is null (no data to display)
+            if (!updatedEmbed) {
+                console.log("No data to display.");
+                return;
+            }
+
+            try {
+                // Get the message if it exists
+                let message = await channel.messages.fetch({ limit: 1 });
+
+                // If there's a message in the channel
+                if (message && message.first()) {
+                    // Edit the message with the updated embed
+                    await editMessage(message.first(), updatedEmbed);
+                } else {
+                    // Send a new message if there's no existing message
+                    message = await sendMessage();
+                }
+            } catch (error) {
+                console.error('Error updating message:', error);
+            } finally {
+                // Schedule the next update after 5 seconds
+                setTimeout(updateMessage, 5000);
+            }
+        };
+
+        // Start the initial send
+        await sendMessage();
+
+        // Start updating the message recursively
+        updateMessage();
+    } catch (err) {
+        console.log('There was an error updating the leaderboard: ' + err);
     }
 });
