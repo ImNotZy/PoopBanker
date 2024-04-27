@@ -61,7 +61,7 @@ module.exports = {
             await user.update({ plays: 0 });
             return await interaction.editReply({ content: `Your time has passed! You can now play backjack!`, ephemeral: true });
           } else {
-            return await interaction.editReply({ content: `You have reached your maximum plays this hour! You can play again at: **${hourLater.toLocaleTimeString()}!**`, ephemeral: true });
+            return await interaction.editReply({ content: `You have reached your maximum plays this hour! You can play again at: **${hourLater.toLocaleTimeString('en-US')}!**`, ephemeral: true });
           }
         } else {
           //increment user plays
