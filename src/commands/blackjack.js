@@ -158,11 +158,11 @@ function calculateHandValue(hand) {
   // Handle aces
   for (let i = 0; i < numAces; i++) {
     // If adding 11 doesn't bust, count Ace as 11
-    if (value + 11 <= 21 - numAces + i) {
+    if (value + 11 <= 21) {
       value += 11;
     } 
     // Otherwise, count Ace as 1
-    else {
+    else if(value + 11 > 21) {
       value += 1;
     }
   }
